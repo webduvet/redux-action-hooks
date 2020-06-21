@@ -1,0 +1,33 @@
+{
+  "name": "redux-hooks",
+  "version": "1.0.0",
+  "description": "Simple Redux Side Effect Hook",
+  "main": "index.js",
+  "scripts": {
+    "start": "npm run build:live",
+    "build": "rm -rf ./lib && npm run tslint && tsc -p .",
+    "build:live": "nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/index.ts",
+    "test": "ENV=test mocha -r ts-node/register src/**/*.test.ts src/**/**/*.test.ts --reporter list",
+    "testone": "ENV=test mocha -r ts-node/register",
+    "nyc": "nyc --check-coverage --per-file npm test",
+    "test-watch": "ENV=test mocha -w -r ts-node/register src/**/*.test.ts --reporter min",
+    "tslint": "tslint ./src/**/*.ts"
+  },
+  "keywords": [
+    "Redux",
+    "Hooks"
+  ],
+  "author": "Andrej Bartko",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/mocha": "^7.0.2",
+    "@types/sinon": "^9.0.4",
+    "mocha": "^8.0.1",
+    "prettier": "^2.0.5",
+    "redux": "^4.0.5",
+    "sinon": "^9.0.2",
+    "tslint": "^6.1.2",
+    "tslint-config-prettier": "^1.18.0",
+    "typescript": "^3.9.5"
+  }
+}
