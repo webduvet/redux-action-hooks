@@ -2,7 +2,7 @@
   "name": "redux-action-hooks",
   "version": "1.0.1",
   "description": "Simple hook for Redux actions to create side effects",
-  "main": "index.js",
+  "main": "lib/index.js",
   "scripts": {
     "start": "npm run build:live",
     "build": "rm -rf ./lib && npm run tslint && tsc -p .",
