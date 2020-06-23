@@ -1,6 +1,6 @@
 {
   "name": "redux-action-hooks",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Simple hook for Redux actions to create side effects",
   "main": "index.js",
   "scripts": {
@@ -13,7 +13,9 @@
     "test-watch": "ENV=test mocha -w -r ts-node/register src/**/*.test.ts --reporter min",
     "tslint": "tslint ./src/**/*.ts"
   },
-  "files": ["lib/**/*"],
+  "files": [
+    "lib/**/*"
+  ],
   "keywords": [
     "Redux",
     "Hooks"
