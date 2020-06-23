@@ -1,7 +1,7 @@
 {
-  "name": "redux-hooks",
+  "name": "redux-action-hooks",
   "version": "1.0.0",
-  "description": "Simple Redux Side Effect Hook",
+  "description": "Simple hook for Redux actions to create side effects",
   "main": "index.js",
   "scripts": {
     "start": "npm run build:live",
