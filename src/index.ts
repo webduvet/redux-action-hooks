@@ -1,5 +1,6 @@
-import Hooks from './hooks';
+import Hooks, { ofType } from './hooks';
 
 export {
-  Hooks
+  Hooks,
+  ofType
 };

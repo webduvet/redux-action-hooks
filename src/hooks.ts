@@ -34,10 +34,8 @@
 
 import { Store, AnyAction } from 'redux';
 
-//type AnyHook = (...p: any) => void;
 type ActionHook = (action: AnyAction, getState?: () => any) => void;
-//type ActionHookSimple = (action: AnyAction) => void;
-//type ActionHookEmpty = () => void;
+type ActionHookEmpty = () => void;
 
 type Hooks = {
   [desc: string]: ActionHook[]
@@ -56,7 +54,7 @@ const attach = (hook: ActionHook) => (type: any) => {
   }
 }
 
-export const ofType = (types: any, hook: ActionHook) => {
+export const ofType = (types: any, hook: ActionHook | ActionHookEmpty) => {
   let t;
   if (Array.isArray(types)) {
     t = types;
