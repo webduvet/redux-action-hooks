@@ -10,15 +10,17 @@
     "baseUrl": "./",
     "outDir": "./lib",
     "lib": ["es5", "dom"],
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "removeComments": true,
+    "declaration": true,
+    "preserveConstEnums": true
   },
   "include": [
     "src/**/*"
   ],
   "exclude": [
     "node_modules",
-    "**/__tests__/*",
-    "**/tests/*",
+    "**/test/*",
     "mocks",
     "mocks/**/*"
   ]
