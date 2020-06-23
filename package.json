@@ -13,6 +13,7 @@
     "test-watch": "ENV=test mocha -w -r ts-node/register src/**/*.test.ts --reporter min",
     "tslint": "tslint ./src/**/*.ts"
   },
+  "files": ["lib/**/*"],
   "keywords": [
     "Redux",
     "Hooks"
