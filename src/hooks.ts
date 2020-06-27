@@ -41,16 +41,13 @@ type Hooks = {
   [desc: string]: ActionHook[]
 }
 
-const _effects: Hooks = {};
+const _hooks: Hooks = {};
 
 const attach = (hook: ActionHook) => (type: any) => {
-  if (_effects[type]) {
-    _effects[type] = [
-      ..._effects[type],
-      hook
-    ];
+  if (_hooks[type]) {
+    _hooks[type].push(hook);
   } else {
-    _effects[type] = [ hook ]
+    _hooks[type] = [ hook ]
   }
 }
 
@@ -71,7 +68,7 @@ export default (store: Store) => (next: Function) => (action: AnyAction) => {
   // by calling the action right here we execute the synchrounous flow BEFORE or hook
   // effectively making our hooks as last in queue
   next(action);
-  (_effects[action.type] || [])
+  (_hooks[action.type] || [])
     .forEach((hook: ActionHook) => {
       hook(action, store.getState);
     });
