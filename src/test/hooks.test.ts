@@ -1,4 +1,4 @@
-import sinon from 'sinon';
+import * as sinon from 'sinon';
 import { createStore, applyMiddleware } from 'redux'
 
 import Hooks, {
