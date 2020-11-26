@@ -32,18 +32,23 @@
  * })
 */
 
-import { Store, AnyAction } from 'redux';
+import {
+  Store,
+  AnyAction
+} from 'redux';
 
-type ActionHook = (action: AnyAction, getState?: () => any) => void;
-type ActionHookEmpty = () => void;
+import {
+  Hooks,
+  ActionHook,
+  ActionHookEmpty
+} from './types';
 
-type Hooks = {
-  [desc: string]: ActionHook[]
-}
+let _hooks: Hooks;
 
-const _hooks: Hooks = {};
-
-const attach = (hook: ActionHook) => (type: any) => {
+export const attach = (hook: ActionHook) => (type: any) => {
+  if (typeof _hooks === 'undefined') {
+    throw Error('No middleware attached, first attach Hooks middleware to store.')
+  }
   if (_hooks[type]) {
     _hooks[type].push(hook);
   } else {
@@ -51,25 +56,20 @@ const attach = (hook: ActionHook) => (type: any) => {
   }
 }
 
-export const ofType = (types: any, hook: ActionHook | ActionHookEmpty) => {
-  let t;
-  if (Array.isArray(types)) {
-    t = types;
-  } else {
-    t = [ types ]
-  }
-  t.forEach(attach(hook));
-};
-
-export default (store: Store) => (next: Function) => (action: AnyAction) => {
-  // NOTE
-  // never swallow the action as there could be other middleware designed to do it or expecting
-  // the action
-  // by calling the action right here we execute the synchrounous flow BEFORE or hook
-  // effectively making our hooks as last in queue
-  next(action);
-  (_hooks[action.type] || [])
+export default (store: Store) => {
+  console.log('here', store);
+  // new hook object when creating middleware
+  _hooks = {};
+  return (next: Function) => (action: AnyAction) => {
+    // NOTE
+    // never swallow the action as there could be other middleware designed to do it or expecting
+    // the action
+    // by calling the action right here we execute the synchrounous flow BEFORE or hook
+    // effectively making our hooks as last in queue
+    next(action);
+    (_hooks[action.type] || [])
     .forEach((hook: ActionHook) => {
       hook(action, store.getState);
     });
-};
+  };
+}

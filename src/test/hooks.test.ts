@@ -1,9 +1,11 @@
 import * as sinon from 'sinon';
 import { createStore, applyMiddleware } from 'redux'
 
-import Hooks, {
+import Hooks from '../hooks'
+
+import {
   ofType
-} from '../hooks';
+} from '../implementation/oftype';
 
 const mockAtcionCreator = () => ({
   type: 'sample',
@@ -15,10 +17,10 @@ const reducer = (state: any = {}, action: any) => {
 }
 
 // NOTE middleware wants any type
-const store = createStore(reducer, applyMiddleware(Hooks as any));
 
 describe('Hooks test', function () {
   it('The hook should execute synchrounously', () => {
+    const store = createStore(reducer, applyMiddleware(Hooks as any));
     let test = false
     ofType('sample', () => {
       test = true;
@@ -26,4 +28,16 @@ describe('Hooks test', function () {
     store.dispatch(mockAtcionCreator());
     sinon.assert.match(test, true);
   });
+
+  it('should throw error if the hook is called without store', (done) => {
+    let test = false
+    const mockFn = () => false;
+    try {
+      ofType('sample', mockFn);
+      done(false)
+    } catch (e) {
+      sinon.assert.match(e, "");
+      done()
+    }
+  })
 });
