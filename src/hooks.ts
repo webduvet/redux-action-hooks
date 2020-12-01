@@ -57,7 +57,7 @@ export default (store: Store) => {
     next(action);
     (_container.hooks[action.type] || [])
     .forEach((hook: ActionHook) => {
-      hook(action, store.getState);
+      hook({ action, getState: store.getState, dispatch: store.dispatch });
     });
   };
 }

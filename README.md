@@ -40,7 +40,7 @@ import './some-hooks'
 ```
 which will hook the side effect to the action.
 ```
-ofType(ActionTypes.PDF_DOCUMENT_FOLDER_SELECTED, (action: AnyAction) => {
+ofType(ActionTypes.PDF_DOCUMENT_FOLDER_SELECTED, ({ action: AnyAction }) => {
   someSideEffectCode();
   orDispatch(newAction(action.payload.pick));
 })
@@ -49,7 +49,7 @@ It is possibe to hook to multiple actions at the same time.
 e.g. if the app need to perform logout after security breach or after user logout action
 
 ```
-ofType([SecurityTypes.INVALIDATE_SESSION, UserAction.LOGOUT], (action: AnyAction) => {
+ofType([SecurityTypes.INVALIDATE_SESSION, UserAction.LOGOUT], ({ action: AnyAction }) => {
   makeSessionInvalid();
   setLocation('/login');
 })
