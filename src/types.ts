@@ -8,7 +8,7 @@ export type HookParams = {
   dispatch: (...a: any) => any
 }
 
-export type ActionHook = (h?: HookParams) => void;
+export type ActionHook = (h: HookParams) => void;
 export type ActionHookEmpty = () => void;
 
 export type Hooks = {

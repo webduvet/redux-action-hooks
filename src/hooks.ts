@@ -43,10 +43,20 @@ import {
   ActionHookEmpty
 } from './types';
 
+/**
+ * @desc
+ * singleton storing all the hooks
+ */
 export const _container: {[s: string]: Hooks} = { hooks: {} };
 
+/**
+ * @desc
+ * redux middleware
+ * execute each hook based on given action type
+ *
+ * @return void
+ */
 export default (store: Store) => {
-  // new hook object when creating middleware
   return (next: Function) => (action: AnyAction) => {
     // NOTE
     // never swallow the action as there could be other middleware designed to do it or expecting
