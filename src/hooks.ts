@@ -43,11 +43,10 @@ import {
   ActionHookEmpty
 } from './types';
 
-export const _container: {[s: string]: Hooks} = {};
+export const _container: {[s: string]: Hooks} = { hooks: {} };
 
 export default (store: Store) => {
   // new hook object when creating middleware
-  _container.hooks = {};
   return (next: Function) => (action: AnyAction) => {
     // NOTE
     // never swallow the action as there could be other middleware designed to do it or expecting
