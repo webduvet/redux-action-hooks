@@ -46,7 +46,6 @@ import {
 export const _container: {[s: string]: Hooks} = {};
 
 export default (store: Store) => {
-  console.log('here', store);
   // new hook object when creating middleware
   _container.hooks = {};
   return (next: Function) => (action: AnyAction) => {
