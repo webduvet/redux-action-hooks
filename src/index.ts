@@ -1,10 +1,7 @@
 import Hooks from './hooks';
 
-import {
-  ofType
-} from './implementation/oftype'
+export * from './api'
 
 export {
   Hooks,
-  ofType
 };

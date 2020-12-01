@@ -1,6 +1,6 @@
 import {
   attach
-} from '../hooks'
+} from '../internal/attach'
 
 import {
   ActionHook,

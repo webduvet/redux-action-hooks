@@ -43,23 +43,12 @@ import {
   ActionHookEmpty
 } from './types';
 
-let _hooks: Hooks;
-
-export const attach = (hook: ActionHook) => (type: any) => {
-  if (typeof _hooks === 'undefined') {
-    throw Error('No middleware attached, first attach Hooks middleware to store.')
-  }
-  if (_hooks[type]) {
-    _hooks[type].push(hook);
-  } else {
-    _hooks[type] = [ hook ]
-  }
-}
+export const _container: {[s: string]: Hooks} = {};
 
 export default (store: Store) => {
   console.log('here', store);
   // new hook object when creating middleware
-  _hooks = {};
+  _container.hooks = {};
   return (next: Function) => (action: AnyAction) => {
     // NOTE
     // never swallow the action as there could be other middleware designed to do it or expecting
@@ -67,7 +56,7 @@ export default (store: Store) => {
     // by calling the action right here we execute the synchrounous flow BEFORE or hook
     // effectively making our hooks as last in queue
     next(action);
-    (_hooks[action.type] || [])
+    (_container.hooks[action.type] || [])
     .forEach((hook: ActionHook) => {
       hook(action, store.getState);
     });
