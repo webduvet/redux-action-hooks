@@ -2,21 +2,75 @@
 Simple middleware for side effects in redux
 
 ## Inspiration
-If you need any an existing action to trigger a side effect or to pipe action to any other action
+If you simply need an existing action to trigger a side effect or to pipe action to any other action
+
+```
+ofType('ACCOUNT_TOPUP_REQUEST', ({ action, dispatch }) => {
+  if(action.payload.amount > 100) {
+    dispatch({
+      type: 'ADD_DISCOUNT',
+      payload: action.payload
+    })
+  }
+})
+```
+
+or
+
+```
+export const topUpEffect = ({ action, dispatch }) => {
+  if(action.payload.amount > 100) {
+    api.post(URL, action.payload)
+    .then((payload) => {
+      dispatch({ type: SUCCESS, payload })
+    })
+  }
+}
+
+ofType('ACCOUNT_TOPUP_REQUEST', topUpEffect)
+```
+This simplifies testing and decouples any asnchronous code or third party logic
+from the redux store
 
 ## How it works
-It works the same way asy any other Redux middleware.
-This middleware calls next(action) as the first thing, so your hook is executed AFTER any other middleware in the pipe
+This is [Redux middleware](https://redux.js.org/understanding/history-and-design/middleware)
+
+This middleware calls `next(action)` as the first statement,
+so your hook is executed AFTER any other middleware in the pipe which is added subsequently.
+
 The tool is designed for side effects which are not dependent on the sequence how the middleware is executed.
-You can also dispatch another action from inside the hook.
-It is not possible to cancel the action or to change the type or the payload of the action. It calls next(action)
-as the first statement before any other user code is executed. If all the middleware piped after
-the redux-action-hooks is synchronous the user side effect in the forme of functin provided into this hook
-will be executed as last.
-This is by design. This small library exists to manage side effects during the redux store update. Side effects
-are by nature asynchronous hence to prevent any accidental damage to the action, the payload or the redux
-state I decided to execute the code at the end of the middleware pipe.
-If any other library uses the same approach the order of the middlewares matters.
+
+This library is intended for application with single redux store
+
+### API
+
+#### ofType
+```
+import { ofType } from 'redux-action-hooks'
+
+ofType(['action_type'], ({ action, getState, dispatch }) => {
+  // can do something
+  // action is direct reference to original action
+  // so modifying the payload can result in undesired effects
+  // getState and dispatch are methods from store
+})
+```
+
+#### pipe
+```
+import { pipe } from 'redux-action-hooks'
+
+pipe(['action_type1'], 'action_type2')
+```
+
+`pipe` simply dispatches another action with the identical payload to the first action
+
+### reset
+```
+import { reset } from 'redux-action-hooks'
+
+reset()
+```
 
 ## Required
 Redux is the only dependency.
@@ -27,7 +81,7 @@ Redux is the only dependency.
 npm install redux-hooks
 ```
 ### Usage
-if using redux-thunk
+if using [redux-thunk](https://github.com/reduxjs/redux-thunk)
 this need to go after thunk in the pipeline
                                                                           
 ideally hooks will sit in separate file
@@ -40,9 +94,9 @@ import './some-hooks'
 ```
 which will hook the side effect to the action.
 ```
-ofType(ActionTypes.PDF_DOCUMENT_FOLDER_SELECTED, ({ action: AnyAction }) => {
+ofType([ActionTypes.PDF_DOCUMENT_FOLDER_SELECTED], ({ action: AnyAction, dispatch: Dispatch }) => {
   someSideEffectCode();
-  orDispatch(newAction(action.payload.pick));
+  dispatch({ type: 'other_action' })
 })
 ```
 It is possibe to hook to multiple actions at the same time.
@@ -54,3 +108,7 @@ ofType([SecurityTypes.INVALIDATE_SESSION, UserAction.LOGOUT], ({ action: AnyActi
   setLocation('/login');
 })
 ```
+
+#License
+
+MIT
