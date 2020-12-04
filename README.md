@@ -4,7 +4,7 @@ Simple middleware for side effects in redux
 ## Inspiration
 If you simply need an existing action to trigger a side effect or to pipe action to any other action
 
-```
+```js
 ofType('ACCOUNT_TOPUP_REQUEST', ({ action, dispatch }) => {
   if(action.payload.amount > 100) {
     dispatch({
@@ -17,7 +17,7 @@ ofType('ACCOUNT_TOPUP_REQUEST', ({ action, dispatch }) => {
 
 or
 
-```
+```js
 export const topUpEffect = ({ action, dispatch }) => {
   if(action.payload.amount > 100) {
     api.post(URL, action.payload)
@@ -45,7 +45,7 @@ This library is intended for application with single redux store
 ### API
 
 #### ofType
-```
+```js
 import { ofType } from 'redux-action-hooks'
 
 ofType(['action_type'], ({ action, getState, dispatch }) => {
@@ -57,7 +57,7 @@ ofType(['action_type'], ({ action, getState, dispatch }) => {
 ```
 
 #### pipe
-```
+```js
 import { pipe } from 'redux-action-hooks'
 
 pipe(['action_type1'], 'action_type2')
@@ -66,7 +66,7 @@ pipe(['action_type1'], 'action_type2')
 `pipe` simply dispatches another action with the identical payload to the first action
 
 ### reset
-```
+```js
 import { reset } from 'redux-action-hooks'
 
 reset()
@@ -77,7 +77,7 @@ Redux is the only dependency.
 
 ## How to use it
 ### Installation
-```
+```sh
 npm install redux-hooks
 ```
 ### Usage
@@ -89,11 +89,11 @@ some-hooks.ts (some-hooks.js)
                                                                           
 and will be called on the beginning of dedicated reducer
 in MyReducer:
-```
+```js
 import './some-hooks'
 ```
 which will hook the side effect to the action.
-```
+```js
 ofType([ActionTypes.PDF_DOCUMENT_FOLDER_SELECTED], ({ action: AnyAction, dispatch: Dispatch }) => {
   someSideEffectCode();
   dispatch({ type: 'other_action' })
@@ -102,7 +102,7 @@ ofType([ActionTypes.PDF_DOCUMENT_FOLDER_SELECTED], ({ action: AnyAction, dispatc
 It is possibe to hook to multiple actions at the same time.
 e.g. if the app need to perform logout after security breach or after user logout action
 
-```
+```js
 ofType([SecurityTypes.INVALIDATE_SESSION, UserAction.LOGOUT], ({ action: AnyAction }) => {
   makeSessionInvalid();
   setLocation('/login');
