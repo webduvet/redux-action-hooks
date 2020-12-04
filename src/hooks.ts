@@ -59,10 +59,8 @@ export const _container: {[s: string]: Hooks} = { hooks: {} };
 export default (store: Store) => {
   return (next: Function) => (action: AnyAction) => {
     // NOTE
-    // never swallow the action as there could be other middleware designed to do it or expecting
-    // the action
-    // by calling the action right here we execute the synchrounous flow BEFORE or hook
-    // effectively making our hooks as last in queue
+    // by calling the action right here we execute the synchrounous flow BEFORE our hook
+    // effectively triggering our hooks as last in the remaining queue
     next(action);
     (_container.hooks[action.type] || [])
     .forEach((hook: ActionHook) => {
