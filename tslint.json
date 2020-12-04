@@ -24,7 +24,6 @@
     "no-var-requires": true,
     "no-require-imports": true,
     "no-console": false,
-    "no-unused-declaration": true,
     "one-line": [
       true,
       "check-else",
