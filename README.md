@@ -109,6 +109,55 @@ ofType([SecurityTypes.INVALIDATE_SESSION, UserAction.LOGOUT], ({ action: AnyActi
 })
 ```
 
-#License
+### Testing
+the effects are here to imporove the testability of the code
+traditional approach - all the async logic is in action creator
+```js
+const export myFetchAction = (url) => (dispatch, getState) => {
+  dispatch(startFetch());
+  myService.fetch(action.payload.url)
+    .then((result) => {
+      dispatch(successAction(result))
+    })
+    .catch((error) => {
+      dispatch(errorAction(error))
+    })
+}
+```
+
+```js
+export const mySideEffect = ({ action, dispatch, getState }) => {
+  myService.fetch(action.payload.url)
+    .then((result) => {
+      dispatch(successAction(result))
+    })
+    .catch((error) => {
+      dispatch(errorAction(error))
+    })
+}
+
+ofType([ EXAMPLE_START ], mySideEffect);
+```
+which looks already much better then packing all the async logic in the action creator.
+Since the effect function is used only in one place we actually can take all the 3rd party
+services outside of the function and inject them only when we need to use the effect.
+```js
+export const mySideEffect = (service) => ({ action, dispatch }) => {
+  service.fetch(action.payload.url)
+    .then((result) => {
+      dispatch(successAction(result))
+    })
+    .catch((error) => {
+      dispatch(errorAction(error))
+    })
+}
+
+ofType([ EXAMPLE_START ], mySideEffect(mySideEffectService));
+```
+in the unit test we can use very simple mock for our service, 3rd party library or store methods
+like dispatch and getState.
+
+
+# License
 
 MIT
