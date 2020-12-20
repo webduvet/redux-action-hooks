@@ -22,6 +22,10 @@
   ],
   "author": "Andrej Bartko",
   "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/webduvet/redux-action-hooks/issues"
+  },
+  "homepage": "https://github.com/webduvet/redux-action-hooks",
   "devDependencies": {
     "@types/mocha": "^8.0.4",
     "@types/sinon": "^9.0.8",
