@@ -49,6 +49,7 @@ import {
  */
 export const _container: {[s: string]: Hooks} = { hooks: {} };
 
+let counter = 0;
 /**
  * @desc
  * redux middleware
@@ -57,6 +58,9 @@ export const _container: {[s: string]: Hooks} = { hooks: {} };
  * @return void
  */
 export default (store: Store) => {
+  // reset the container whenever we applyMiddleware
+  // NOTE: this supports only single store app
+  _container.hooks = {};
   return (next: Function) => (action: AnyAction) => {
     // NOTE
     // by calling the action right here we execute the synchrounous flow BEFORE our hook

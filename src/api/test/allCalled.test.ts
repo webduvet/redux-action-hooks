@@ -4,10 +4,10 @@ import { createStore, applyMiddleware } from 'redux'
 import Hooks from '../../hooks'
 
 import {
-  ofType
+  allCalled
 } from '../allCalled';
 
-const mockAtcionCreator = (type, payload) => ({
+const mockAtcionCreator = (type: string, payload: any) => ({
   type,
   payload
 });
@@ -18,22 +18,47 @@ const reducer = (state: any = {}, action: any) => {
 
 // NOTE middleware wants any type
 
-describe('ofType', function () {
+describe('allCalled', function () {
   it('should not trigger only when one action is triggered', () => {
     const store = createStore(reducer, applyMiddleware(Hooks as any));
-    let test = false
+    const mockedHook = sinon.spy();
+    allCalled([ 'one', 'two' ], mockedHook);
     store.dispatch(mockAtcionCreator('one', 'action one' ));
-    sinon.assert.match(test, false);
+    sinon.assert.match(mockedHook.called, false);
   });
 
-  it('should when both actions were triggered', () => {
+  it('should trigger when all actions were triggered', () => {
     const store = createStore(reducer, applyMiddleware(Hooks as any));
-    let test = false
-    allCalled([ 'one', 'two' ], () => {
-      test = true;
-    });
+    const mockedHook = sinon.spy();
+    allCalled([ 'one', 'two' ], mockedHook);
     store.dispatch(mockAtcionCreator('one', 'action one' ));
     store.dispatch(mockAtcionCreator('two', 'action two' ));
-    sinon.assert.match(test, true);
+    sinon.assert.match(mockedHook.calledOnce, true);
   });
+
+  describe('cleanup config:', () => {
+    it('reset the hook once all actions are triggered and hook in executed', () => {
+      const store = createStore(reducer, applyMiddleware(Hooks as any));
+      const mockedHook = sinon.spy();
+
+      allCalled([ 'one', 'two' ], mockedHook, { cleanup: true });
+
+      store.dispatch(mockAtcionCreator('one', 'action one' ));
+      store.dispatch(mockAtcionCreator('two', 'action two' ));
+      store.dispatch(mockAtcionCreator('two', 'action two' ));
+      sinon.assert.match(mockedHook.calledOnce, true);
+    });
+
+    it('should in subsequent action trigger the hook once it was already triggered', () => {
+      const store = createStore(reducer, applyMiddleware(Hooks as any));
+      const mockedHook = sinon.spy();
+
+      allCalled([ 'one', 'two' ], mockedHook, { cleanup: false });
+
+      store.dispatch(mockAtcionCreator('one', 'action one' ));
+      store.dispatch(mockAtcionCreator('two', 'action two' ));
+      store.dispatch(mockAtcionCreator('two', 'action two' ));
+      sinon.assert.match(mockedHook.calledTwice, true);
+    });
+  })
 });
