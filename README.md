@@ -2,27 +2,19 @@
 Simple middleware for side effects in redux
 
 ## Inspiration
-If you simply need an existing action to trigger a side effect or to pipe action to any other action
+This is inspired by Angular's side effects  based on RXJS without all rx library.
+Redux already has ability to observe the incoming redux actions and exposes the middleware
+for side effects.<br>
+This creates very simple api how to tap to the redux action flow and create
+simple clear and testable logic.
 
-```js
-ofType('ACCOUNT_TOPUP_REQUEST', ({ action, dispatch }) => {
-  if(action.payload.amount > 100) {
-    dispatch({
-      type: 'ADD_DISCOUNT',
-      payload: action.payload
-    })
-  }
-})
-```
-
-or
-
+example
 ```js
 export const topUpEffect = ({ action, dispatch }) => {
   if(action.payload.amount > 100) {
     api.post(URL, action.payload)
     .then((payload) => {
-      dispatch({ type: SUCCESS, payload })
+      dispatch(topUpSuccess(payload))
     })
   }
 }
@@ -30,25 +22,38 @@ export const topUpEffect = ({ action, dispatch }) => {
 ofType('ACCOUNT_TOPUP_REQUEST', topUpEffect)
 ```
 This simplifies testing and decouples any asnchronous code or third party logic
-from the redux store
+from the redux flow from **action creator** to **reducer**
 
 ## How it works
 This is [Redux middleware](https://redux.js.org/understanding/history-and-design/middleware)
 
-This middleware calls `next(action)` as the first statement,
-so your hook is executed AFTER any other middleware in the pipe which is added subsequently.
+This middleware calls `next(action)` as the first statement, so your hook is
+executed AFTER any other middleware in the pipe which is added subsequently.<br>
+However, this tool is designed for side effects which are not dependent on the
+sequence how the middleware is executed.
 
-The tool is designed for side effects which are not dependent on the sequence how the middleware is executed.
+This library is intended for application with **single redux store** or if the application has
+more then one redux store, it will work only with one of them.
 
-This library is intended for application with single redux store
-
-### API
+### Examples
 
 #### ofType
+Observes the type of the action and allows to execute extra logic if the action is in the
+redux flow.
+
+NOTE - modifying action is not recommended. It can yield unexpected results.
+
 ```js
 import { ofType } from 'redux-action-hooks'
 
-ofType(['action_type'], ({ action, getState, dispatch }) => {
+ofType('action_type_one', ({ action, getState, dispatch }) => {
+  // can do something
+  // action is direct reference to original action
+  // so modifying the payload can result in undesired effects
+  // getState and dispatch are methods from store
+})
+
+ofType(['action_type_one', 'action_type_two'], ({ action, getState, dispatch }) => {
   // can do something
   // action is direct reference to original action
   // so modifying the payload can result in undesired effects
@@ -57,37 +62,45 @@ ofType(['action_type'], ({ action, getState, dispatch }) => {
 ```
 
 #### pipe
+`pipe` simply dispatches another action with the identical payload to the first action(s)
+
 ```js
 import { pipe } from 'redux-action-hooks'
 
 pipe(['action_type1'], 'action_type2')
 ```
 
-`pipe` simply dispatches another action with the identical payload to the first action
-
-### reset
+#### allCalled
+oberves all action given in the array, and exectues the side effects only after
+all of them had been called at least once.
+The hook takes opional parameter in the form of `{ cleanup: boolean }` which indicates
+whether we cleanup the call history once the side effect is run. If not given or set to false
+the side offect will run on every subseqent call of any given action passed into the hook.
 ```js
-import { reset } from 'redux-action-hooks'
+import { allCalled } from 'redux-action-hooks'
 
-reset()
+allCalled(['action_A', 'action_B'], someSideEffectCode, { cleanup: true })
 ```
 
 ## Required
-Redux is the only dependency.
+`Redux` is the only dependency. More specifically it is `@types/redux` (or types from redux if
+supplied), However if you are not using typescript, there is no 3rd party dependency besides
+it is expected to be used with Redux middleware.
 
 ## How to use it
 ### Installation
 ```sh
-npm install redux-hooks
+npm install redux-action-hooks
 ```
 ### Usage
 if using [redux-thunk](https://github.com/reduxjs/redux-thunk)
 this need to go after thunk in the pipeline
                                                                           
 ideally hooks will sit in separate file
-some-hooks.ts (some-hooks.js)
+`some-hooks.ts` (some-hooks.js) along the other redux files (reducers, action creators)
                                                                           
-and will be called on the beginning of dedicated reducer
+and will be called in the beginning of dedicated reducer
+
 in MyReducer:
 ```js
 import './some-hooks'
@@ -160,4 +173,4 @@ like dispatch and getState.
 
 # License
 
-MIT
+ISC
