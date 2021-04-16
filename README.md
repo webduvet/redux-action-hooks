@@ -3,9 +3,9 @@ Simple middleware for side effects in redux
 
 ## Inspiration
 This is inspired by Angular's side effects  based on RXJS without all rx library.
-Redux already has ability to observe the incoming redux actions and exposes the middleware
-for side effects.<br>
-This creates very simple api how to tap to the redux action flow and create
+**Redux** already has an ability to observe the incoming redux actions and exposes the middleware
+for the side effects.<br>
+This library creates very simple API to interact with redux action flow and create
 simple clear and testable logic.
 
 example
@@ -35,6 +35,32 @@ sequence how the middleware is executed.
 This library is intended for application with **single redux store** or if the application has
 more then one redux store, it will work only with one of them.
 
+It is initialized as any other redux middleware by passing the Hooks into the
+`createMiddleware` function
+```js
+import Hooks from 'redux-action-hooks'
+
+const store = createStore(reducer, applyMiddleware(...othermiddleware, Hooks));
+```
+To hook the side effect every hook needs to be registered `once`.
+Depending on directory structure it can be run from the `createStore` file,
+or if application grows larger it is good idea to store the hooks together with reducers.
+
+```
+.
+..
+action_creators.js
+action_types.js
+reducer.js
+effects.js
+```
+in reducer:
+```js
+import './hooks.js'
+```
+the above code in `reducer.js` will register all hooks once, since the `reducer.js` code
+is executed only once.
+
 ### Examples
 
 #### ofType
@@ -47,18 +73,17 @@ NOTE - modifying action is not recommended. It can yield unexpected results.
 import { ofType } from 'redux-action-hooks'
 
 ofType('action_type_one', ({ action, getState, dispatch }) => {
-  // can do something
-  // action is direct reference to original action
-  // so modifying the payload can result in undesired effects
-  // getState and dispatch are methods from store
+  console.log(`Hello triggered by "${action.type}".`)
 })
 
-ofType(['action_type_one', 'action_type_two'], ({ action, getState, dispatch }) => {
-  // can do something
-  // action is direct reference to original action
-  // so modifying the payload can result in undesired effects
-  // getState and dispatch are methods from store
-})
+// running somewhere in the code will cause the following console output
+dispatch({ action_type_one })
+
+> Hello triggered by "action_type_one".
+
+// passing multiple actions will cause the function 'runSideEffect'
+// to be executed whenever any action in the list is dispatched
+ofType(['action_type_one', 'action_type_two'], runSideEffect);
 ```
 
 #### pipe
@@ -68,18 +93,49 @@ ofType(['action_type_one', 'action_type_two'], ({ action, getState, dispatch }) 
 import { pipe } from 'redux-action-hooks'
 
 pipe(['action_type1'], 'action_type2')
+
+ofType('action_type2', () => { console.log('hello world') })
+
+//running somewhere in the code:
+dispatch({ type: action_type1 }) // will create console output
+
+> hello world
+
 ```
 
 #### allCalled
 oberves all action given in the array, and exectues the side effects only after
 all of them had been called at least once.
 The hook takes opional parameter in the form of `{ cleanup: boolean }` which indicates
-whether we cleanup the call history once the side effect is run. If not given or set to false
-the side offect will run on every subseqent call of any given action passed into the hook.
+whether to cleanup the call history once the side effect is run.
+If not given or set to `false` the side offect will run on every subseqent call
+of any given action passed into the hook.
+#####expample
 ```js
 import { allCalled } from 'redux-action-hooks'
 
-allCalled(['action_A', 'action_B'], someSideEffectCode, { cleanup: true })
+allCalled(['action_A', 'action_B'], () => {  console.log('hello world') }, { cleanup: false })
+
+dispatch({ type: action_A });
+// no console output
+dispatch({ type: action_B })
+> hello world
+dispatch({ type: action_A });
+> hello world // prints hello world again
+```
+
+```js
+allCalled(['action_A', 'action_B'], () => {  console.log('hello world') }, { cleanup: true })
+
+dispatch({ type: action_A });
+// no console output
+dispatch({ type: action_B })
+> hello world
+dispatch({ type: action_A });
+// no console output
+dispatch({ type: action_B })
+> hello world
+
 ```
 
 ## Required
