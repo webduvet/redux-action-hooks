@@ -1,6 +1,6 @@
 {
   "name": "redux-action-hooks",
-  "version": "2.0.4",
+  "version": "2.1.0",
   "description": "Simple hook for Redux actions to create side effects",
   "main": "lib/index.js",
   "scripts": {
