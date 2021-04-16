@@ -9,3 +9,7 @@ export {
 export {
   pipe
 } from './pipe'
+
+export {
+  allCalled
+} from './allCalled'

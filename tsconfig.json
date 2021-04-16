@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "target": "es5", 
+    "target": "es2017", 
     "module": "commonjs",
     "strict": true,
     "esModuleInterop": true,
@@ -9,7 +9,7 @@
     "moduleResolution": "node",
     "baseUrl": "./",
     "outDir": "./lib",
-    "lib": ["es5", "dom"],
+    "lib": ["ES2017", "dom"],
     "esModuleInterop": true,
     "removeComments": true,
     "declaration": true,
