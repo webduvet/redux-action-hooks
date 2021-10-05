@@ -19,7 +19,7 @@ const reducer = (state: any = {}, action: any) => {
 // NOTE middleware wants any type
 
 describe('ofType', function () {
-  it('should execute synchrounously', () => {
+  it('should recognize action and execute callback', () => {
     const store = createStore(reducer, applyMiddleware(Hooks as any));
     let test = false
     ofType('sample', () => {
