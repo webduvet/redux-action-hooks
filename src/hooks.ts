@@ -1,7 +1,3 @@
-/*
- * 
-*/
-
 import {
   Store,
   AnyAction
@@ -35,10 +31,11 @@ export default (store: Store) => {
     // NOTE
     // by calling the action right here we execute the synchrounous flow BEFORE our hook
     // effectively triggering our hooks as last in the remaining queue
-    next(action);
+    const result = next(action);
     (_container.hooks[action.type] || [])
     .forEach((hook: ActionHook) => {
       hook({ action, getState: store.getState, dispatch: store.dispatch });
     });
+    return result;
   };
 }
